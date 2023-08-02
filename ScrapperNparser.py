@@ -25,24 +25,25 @@ def extnparser(current, end, city, station):
             "https://www.wunderground.com/history/daily/in/mumbai/VABB/date/2015-7-31"
         )
 
-        driver = webdriver.Chrome(options=chrome_options,)
+        driver = webdriver.Chrome(
+            options=chrome_options,
+        )
         driver.get(formatted_lookup_URL)
 
         html = driver.page_source
 
         soup = BeautifulSoup(html, "html.parser")
         table = soup.find("table", class_="ng-star-inserted")
-        print(table)
 
-        tbody_sections = soup.find('table', class_='ng-star-inserted').find_all('tbody')
+        tbody_sections = table.find_all("tbody")
 
         def extract_row_values(row):
             pass
 
         for tbody in tbody_sections:
-            rows = tbody.find_all('tr', class_='ng-star-inserted')[1:]
+            rows = tbody.find_all("tr", class_="ng-star-inserted")[1:]
             for r in rows:
-                print(r.prettify())
+                print(r)
         break
 
 
