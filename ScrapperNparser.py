@@ -1,13 +1,11 @@
 # coding: utf-8
 
 from datetime import datetime, timedelta
-from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import requests
 from selenium import webdriver
 import os
 
-chrome_options = Options()
-chrome_options.add_argument("--headless")
 
 
 def extnparser(current, end, city, station):
@@ -25,14 +23,11 @@ def extnparser(current, end, city, station):
             "https://www.wunderground.com/history/daily/in/mumbai/VABB/date/2015-7-31"
         )
 
-        driver = webdriver.Chrome(
-            options=chrome_options,
-        )
-        driver.get(formatted_lookup_URL)
+        table_data = requests.get(formatted_lookup_URL).content
 
-        html = driver.page_source
+        print(table_data)
 
-        soup = BeautifulSoup(html, "html.parser")
+        """soup = BeautifulSoup(html, "html.parser")
         table = soup.find("table", class_="ng-star-inserted")
 
         tbody_sections = table.find_all("tbody")
@@ -43,7 +38,7 @@ def extnparser(current, end, city, station):
         for tbody in tbody_sections:
             rows = tbody.find_all("tr", class_="ng-star-inserted")[1:]
             for r in rows:
-                print(r)
+                print(r)"""
         break
 
 
