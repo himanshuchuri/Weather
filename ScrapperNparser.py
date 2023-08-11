@@ -52,7 +52,7 @@ def extnparser(df, columns, current, end, city, station):
                         numerical_values.append(None)
 
         numerical_values.insert(0, current)
-        tmp_df = pd.DataFrame(numerical_values, columns=columns)
+        tmp_df = pd.DataFrame([numerical_values], columns=columns)
         df = pd.append([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
 
