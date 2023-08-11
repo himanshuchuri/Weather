@@ -55,7 +55,6 @@ def extnparser(df, columns, current, end, city, station):
         tmp_df = pd.DataFrame(numerical_values, columns=columns)
         df = pd.append([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
-from selenium.webdriver.chrome.options import Options
 
 
 os.mkdir("Data_ETL")
