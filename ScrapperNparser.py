@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from datetime import datetime, timedelta
+import time
 import pandas as pd
 import os
 from selenium import webdriver
@@ -27,7 +28,12 @@ def extnparser(df, columns, current, end, city, station):
         driver.get(formatted_lookup_URL)
 
         element = WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, '//*[@id="inner-content"]/div[2]/div[1]/div[3]/div[1]/div/lib-city-history-summary/div/div[2]/table'))
+            EC.visibility_of_element_located(
+                (
+                    By.XPATH,
+                    '//*[@id="inner-content"]/div[2]/div[1]/div[3]/div[1]/div/lib-city-history-summary/div/div[2]/table',
+                )
+            )
         )
 
         data = element.text
@@ -56,25 +62,25 @@ def extnparser(df, columns, current, end, city, station):
         tmp_df = pd.DataFrame([numerical_values], columns=columns)
         df = pd.concat([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
+    driver.quit()
     return df
-    
+
+
 def divide_date_range(start_date, end_date, interval_days):
     current_date = start_date
     intervals = []
-
     while current_date <= end_date:
         interval_end = current_date + timedelta(days=interval_days)
         if interval_end > end_date:
             interval_end = end_date
 
         intervals.append((current_date, interval_end))
-        current_date = interval_end + timedelta(days=1)
+        current_date = interval_end  + timedelta(days=1)
 
     return intervals
 
 
-
-#os.mkdir("Data_ETL")
+if not os.path.exists("Data_ETL"): os.mkdir("Data_ETL")
 columns = [
     "Date",
     "High Temp: Actual",
@@ -124,10 +130,10 @@ for city, station in cities:
     start, end = datetime.strptime(start_date, "%m/%d/%Y"), datetime.strptime(
         end_date, "%m/%d/%Y"
     )
-    date_intervals = divide_date_range(start_date, end_date, 30)
-    n =len(date_intervals)
-    for i in range(n-1):
-        print(date_intervals[i],date_intervals[i+1])
-        #df =  extnparser(df, columns, date_intervals[i], date_intervals[i+1], city, station)
+    date_intervals = divide_date_range(start, end, 30)
+    n = len(date_intervals)
+    for i in range(n):
+        df = extnparser(df, columns, date_intervals[i][0],date_intervals[i][1], city, station)
+        time.sleep(40)
 
-#df.to_csv("output_{}.csv".format(name), index=False)
+df.to_csv("output.csv", index=False)
