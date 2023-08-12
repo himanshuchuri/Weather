@@ -24,8 +24,8 @@ def extnparser(df, columns, current, end, city, station):
         }
         chromeProfile.add_experimental_option("prefs", chrome_prefs)
         driver = webdriver.Chrome(options=chromeProfile)
-        driver.set_page_load_timeout(20)
         driver.get(formatted_lookup_URL)
+        driver.set_page_load_timeout(20)
 
         element = WebDriverWait(driver, 30).until(
             EC.visibility_of_element_located(
@@ -62,6 +62,7 @@ def extnparser(df, columns, current, end, city, station):
         tmp_df = pd.DataFrame([numerical_values], columns=columns)
         df = pd.concat([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
+        time.sleep(5)
     driver.quit()
     return df
 
@@ -75,12 +76,13 @@ def divide_date_range(start_date, end_date, interval_days):
             interval_end = end_date
 
         intervals.append((current_date, interval_end))
-        current_date = interval_end  + timedelta(days=1)
+        current_date = interval_end + timedelta(days=1)
 
     return intervals
 
 
-if not os.path.exists("Data_ETL"): os.mkdir("Data_ETL")
+if not os.path.exists("Data_ETL"):
+    os.mkdir("Data_ETL")
 columns = [
     "Date",
     "High Temp: Actual",
@@ -133,7 +135,9 @@ for city, station in cities:
     date_intervals = divide_date_range(start, end, 30)
     n = len(date_intervals)
     for i in range(n):
-        df = extnparser(df, columns, date_intervals[i][0],date_intervals[i][1], city, station)
+        df = extnparser(
+            df, columns, date_intervals[i][0], date_intervals[i][1], city, station
+        )
         time.sleep(40)
 
 df.to_csv("output.csv", index=False)
