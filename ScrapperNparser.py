@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def extnparser(df, columns, current, end, city, station):
-    name = current.strftime("%m_%d_%Y")+end.strftime("%m_%d_%Y")
     while current != end:
         lookup_URL = "https://www.wunderground.com/history/daily/in/{}/{}/date/{}-{}-{}"
 
@@ -57,7 +56,21 @@ def extnparser(df, columns, current, end, city, station):
         tmp_df = pd.DataFrame([numerical_values], columns=columns)
         df = pd.concat([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
-    df.to_csv("output_{}.csv".format(name), index=False)
+    return df
+    
+def divide_date_range(start_date, end_date, interval_days):
+    current_date = start_date
+    intervals = []
+
+    while current_date <= end_date:
+        interval_end = current_date + timedelta(days=interval_days)
+        if interval_end > end_date:
+            interval_end = end_date
+
+        intervals.append((current_date, interval_end))
+        current_date = interval_end + timedelta(days=1)
+
+    return intervals
 
 
 
@@ -111,4 +124,10 @@ for city, station in cities:
     start, end = datetime.strptime(start_date, "%m/%d/%Y"), datetime.strptime(
         end_date, "%m/%d/%Y"
     )
-    extnparser(df, columns, start, end, city, station)
+    date_intervals = divide_date_range(start_date, end_date, 30)
+    n =len(date_intervals)
+    for i in range(n-1):
+        print(date_intervals[i],date_intervals[i+1])
+        #df =  extnparser(df, columns, date_intervals[i], date_intervals[i+1], city, station)
+
+#df.to_csv("output_{}.csv".format(name), index=False)
