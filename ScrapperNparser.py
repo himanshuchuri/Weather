@@ -58,12 +58,12 @@ def extnparser(df, columns, current, end, city, station):
         numerical_values.insert(0, current)
         if len(numerical_values) > 34:
             numerical_values = numerical_values[:34]
-        print(current.strftime("%m-%d-%Y"))
+        #print(current.strftime("%m-%d-%Y"))
         tmp_df = pd.DataFrame([numerical_values], columns=columns)
         df = pd.concat([df, tmp_df], ignore_index=True)
         current += timedelta(days=1)
         time.sleep(5)
-    driver.quit()
+        driver.quit()
     return df
 
 
@@ -127,7 +127,6 @@ start_date = input()
 print("\nEnter an ending date (MM/DD/YYYY): ")
 end_date = input()
 print(" ")
-
 for city, station in cities:
     start, end = datetime.strptime(start_date, "%m/%d/%Y"), datetime.strptime(
         end_date, "%m/%d/%Y"
@@ -135,9 +134,10 @@ for city, station in cities:
     date_intervals = divide_date_range(start, end, 30)
     n = len(date_intervals)
     for i in range(n):
+        print(i," of ",n,' interval processing')
         df = extnparser(
             df, columns, date_intervals[i][0], date_intervals[i][1], city, station
         )
         time.sleep(40)
-
-df.to_csv("output.csv", index=False)
+s = "_"+start.strftime("%m_%d_%Y")+"_"+end.strftime("%m_%d_%Y")
+df.to_csv("output{}.csv".format(s), index=False)
